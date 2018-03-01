@@ -1,23 +1,37 @@
 package io.github.saatkamp.TopologyProblemRecognizer;
 
 
-import org.eclipse.winery.repository.client.IWineryRepositoryClient;
-import org.eclipse.winery.repository.client.WineryRepositoryClientFactory;
-import org.jpl7.fli.Prolog;
+import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @RestController
 public class WebController {
 
+    @GetMapping("/recognize")
+    public String getRecognizedProblemsInTopology
+            (@RequestParam("wineryURL") String wineryURL,
+             @RequestParam("serviceTemplateNS") String serviceTemplateNS,
+             @RequestParam("serviceTemplateID") String serviceTemplateID) {
+
+        PrologFactTopologyGenerator generator = new PrologFactTopologyGenerator();
+        generator.setRepositoryClientURL(wineryURL);
+        try {
+            ServiceTemplateId serviceTemplateId = new ServiceTemplateId(serviceTemplateNS, serviceTemplateID, true);
+            generator.transform(serviceTemplateId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "Hello you too!!!!!";
+    }
+
     @GetMapping
     public String doSomething() {
-        IWineryRepositoryClient repositoryClient = WineryRepositoryClientFactory.getWineryRepositoryClient();
-        repositoryClient.setPrimaryRepository("http://localhost:8080/winery");
-        System.out.println(Prolog.initialise());
-        //String patterns = "['C:\\\\Users\\\\saatkake\\\\Documents\\\\Veröffentlichungen\\\\2018_SummerSOC\\\\prolog_files\\\\topology'].";
-        //Query q1 = new Query(patterns);
-        //System.out.println( "consult " + (q1.hasSolution()));
+
         return "Hello you too!!!!!";
     }
 
