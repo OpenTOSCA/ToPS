@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 
 @RestController
@@ -19,9 +20,12 @@ public class WebController {
 
         PrologFactTopologyGenerator generator = new PrologFactTopologyGenerator();
         generator.setRepositoryClientURL(wineryURL);
+        ProblemRecognizer recognizer = new ProblemRecognizer();
         try {
-            ServiceTemplateId serviceTemplateId = new ServiceTemplateId(serviceTemplateNS, serviceTemplateID, true);
-            generator.transform(serviceTemplateId);
+            ServiceTemplateId serviceTemplateId = new ServiceTemplateId(serviceTemplateNS, serviceTemplateID, false);
+            QName serviceTemplateQName = new QName(serviceTemplateNS, serviceTemplateID);
+            generator.generatePrologFileForTopology(serviceTemplateQName);
+            recognizer.checkTopology(serviceTemplateID);
         } catch (IOException e) {
             e.printStackTrace();
         }
