@@ -44,11 +44,15 @@ public class ProblemRecognizer {
             String problemQuery = reader.readLine();
 
             while(problemQuery != null) {
-                Map<String, Term>[] ss4 = Query.allSolutions(problemQuery);
-                System.out.println("all solutions of " + problemQuery);
-                for (int i = 0; i < ss4.length; i++) {
-                    System.out.println("X = " + ss4[i].get("X"));
-                    System.out.println("X = " + ss4[i].get("Y"));
+                if(Query.hasSolution(problemQuery)) {
+                    Map<String, Term>[] ss4 = Query.allSolutions(problemQuery);
+                    System.out.println("all solutions of " + problemQuery);
+                    for (int i = 0; i < ss4.length; i++) {
+                        System.out.println("X = " + ss4[i].get("X"));
+                        System.out.println("X = " + ss4[i].get("Y"));
+                    }
+                } else {
+                    System.out.println("all solutions of " + problemQuery + " is false");
                 }
                 problemQuery = reader.readLine();
             }

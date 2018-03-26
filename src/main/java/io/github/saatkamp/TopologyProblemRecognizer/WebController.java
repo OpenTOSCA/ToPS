@@ -18,8 +18,7 @@ public class WebController {
              @RequestParam("serviceTemplateNS") String serviceTemplateNS,
              @RequestParam("serviceTemplateID") String serviceTemplateID) {
 
-        PrologFactTopologyGenerator generator = new PrologFactTopologyGenerator();
-        generator.setRepositoryClientURL(wineryURL);
+        PrologFactTopologyGenerator generator = new PrologFactTopologyGenerator(wineryURL);
         ProblemRecognizer recognizer = new ProblemRecognizer();
         try {
             ServiceTemplateId serviceTemplateId = new ServiceTemplateId(serviceTemplateNS, serviceTemplateID, false);
