@@ -2,6 +2,8 @@ package io.github.saatkamp.TopologyProblemRecognizer;
 
 import org.jpl7.Query;
 import org.jpl7.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,16 +14,16 @@ import java.util.Map;
 public class ProblemRecognizer {
 
     private File problemQueries;
+    private static Logger logger = LoggerFactory.getLogger(ProblemRecognizer.class);
 
     public ProblemRecognizer() {
         File patternsFolder = new File("pattern_prologfiles");
         File[] listOfPatternFiles = patternsFolder.listFiles();
         for (File pattern : listOfPatternFiles) {
             if(pattern.getName().endsWith(".pl")) {
-                System.out.println("File " + pattern.getName());
                 String patternLoadQuery = "consult('pattern_prologfiles/" + pattern.getName() +"')";
                 Query queryPatternLoad = new Query(patternLoadQuery);
-                System.out.println( "consult " + (queryPatternLoad.hasSolution()));
+                logger.info( "File: {} consulting finished with {}", pattern.getName(), queryPatternLoad.hasSolution());
             }
             if (pattern.getName().endsWith(".txt")) {
                 problemQueries = pattern;
@@ -34,7 +36,7 @@ public class ProblemRecognizer {
         if (topology.exists()) {
             String topologyLoadQuery = "consult('topologies/" + topology.getName() +"')";
             Query queryTopologyLoad = new Query(topologyLoadQuery);
-            System.out.println( "consult " + (queryTopologyLoad.hasSolution()));
+            logger.info( "File: {} consulting finished with {}",topology.getName(), (queryTopologyLoad.hasSolution()));
         } else {
             throw new IOException("Topology is not available");
         }
@@ -46,13 +48,13 @@ public class ProblemRecognizer {
             while(problemQuery != null) {
                 if(Query.hasSolution(problemQuery)) {
                     Map<String, Term>[] ss4 = Query.allSolutions(problemQuery);
-                    System.out.println("all solutions of " + problemQuery);
+                    logger.info("all solutions of {}", problemQuery);
                     for (int i = 0; i < ss4.length; i++) {
-                        System.out.println("X = " + ss4[i].get("X"));
-                        System.out.println("X = " + ss4[i].get("Y"));
+                        logger.info("X = {}" + ss4[i].get("X"));
+                        logger.info("Y = {}" + ss4[i].get("Y"));
                     }
                 } else {
-                    System.out.println("all solutions of " + problemQuery + " is false");
+                   logger.info("problem {} is not contained in topology", problemQuery);
                 }
                 problemQuery = reader.readLine();
             }

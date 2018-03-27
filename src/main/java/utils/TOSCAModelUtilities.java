@@ -16,15 +16,16 @@ import java.util.stream.Collectors;
 
 public class TOSCAModelUtilities {
 
-    public TOSCAModelUtilities(String wineryURL) {
-        this.repositoryClient.addRepository(wineryURL);
-        this.repositoryClient.setPrimaryRepository(wineryURL);
+    public static IWineryRepositoryClient repositoryClient = WineryRepositoryClientFactory.getWineryRepositoryClient();
+
+    public static void setWineryUrl(String wineryURL) {
+        repositoryClient.addRepository(wineryURL);
+        repositoryClient.setPrimaryRepository(wineryURL);
         System.out.println("Repository available?" + repositoryClient.primaryRepositoryAvailable());
     }
-    private IWineryRepositoryClient repositoryClient = WineryRepositoryClientFactory.getWineryRepositoryClient();
 
 
-    public List<TNodeTemplate> getNodeTemplatesWithoutIncomingHostedOnRelationships(TTopologyTemplate topologyTemplate) {
+    public static List<TNodeTemplate> getNodeTemplatesWithoutIncomingHostedOnRelationships(TTopologyTemplate topologyTemplate) {
 
         return topologyTemplate.getNodeTemplates()
                 .stream()
@@ -39,7 +40,7 @@ public class TOSCAModelUtilities {
      * @param nodeTemplate for which all predecessors should be found
      * @return list of predecessors
      */
-    public List<TNodeTemplate> getHostedOnPredecessorsOfNodeTemplate(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
+    public static List<TNodeTemplate> getHostedOnPredecessorsOfNodeTemplate(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
         List<TNodeTemplate> predecessorNodeTemplates = new ArrayList<>();
         predecessorNodeTemplates.clear();
         List<TRelationshipTemplate> incomingRelationships = ModelUtilities.getIncomingRelationshipTemplates(topologyTemplate, nodeTemplate);
@@ -60,7 +61,7 @@ public class TOSCAModelUtilities {
      * @param nodeTemplate for which all successors should be found
      * @return list of successors (node templates)
      */
-    public List<TNodeTemplate> getHostedOnSuccessorsOfNodeTemplate(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
+    public static List<TNodeTemplate> getHostedOnSuccessorsOfNodeTemplate(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
         List<TNodeTemplate> successorNodeTemplates = new ArrayList<>();
         for (TRelationshipTemplate relationshipTemplate : ModelUtilities.getOutgoingRelationshipTemplates(topologyTemplate, nodeTemplate)) {
             if ((getBasisRelationshipType(relationshipTemplate.getType()).getValidTarget() != null &&
@@ -74,9 +75,9 @@ public class TOSCAModelUtilities {
 
 
 
-    public TRelationshipType getBasisRelationshipType(QName relationshipTypeQName) {
+    public static TRelationshipType getBasisRelationshipType(QName relationshipTypeQName) {
         RelationshipTypeId parentRelationshipTypeId = new RelationshipTypeId(relationshipTypeQName);
-        TRelationshipType parentRelationshipType = this.repositoryClient.getType(relationshipTypeQName, TRelationshipType.class);
+        TRelationshipType parentRelationshipType = repositoryClient.getType(relationshipTypeQName, TRelationshipType.class);
         TRelationshipType basisRelationshipType = parentRelationshipType;
 
         while (parentRelationshipType != null) {
@@ -85,7 +86,7 @@ public class TOSCAModelUtilities {
             if (parentRelationshipType.getDerivedFrom() != null) {
                 relationshipTypeQName = parentRelationshipType.getDerivedFrom().getTypeRef();
                 parentRelationshipTypeId = new RelationshipTypeId(relationshipTypeQName);
-                parentRelationshipType = this.repositoryClient.getType(relationshipTypeQName, TRelationshipType.class);
+                parentRelationshipType = repositoryClient.getType(relationshipTypeQName, TRelationshipType.class);
             } else {
                 parentRelationshipType = null;
             }

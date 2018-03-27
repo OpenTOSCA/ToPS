@@ -7,7 +7,8 @@ import org.eclipse.winery.model.tosca.TRelationshipTemplate;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.client.IWineryRepositoryClient;
-import org.eclipse.winery.repository.client.WineryRepositoryClientFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.TOSCAModelUtilities;
 
 import javax.xml.namespace.QName;
@@ -18,15 +19,16 @@ import java.util.Map;
 
 public class PrologFactTopologyGenerator {
 
+    private IWineryRepositoryClient repositoryClient;
+    private static Logger logger = LoggerFactory.getLogger(PrologFactTopologyGenerator.class);
+
     public PrologFactTopologyGenerator(String wineryURL) {
         this.repositoryClient.addRepository(wineryURL);
         this.repositoryClient.setPrimaryRepository(wineryURL);
-        System.out.println("Repository available?" + repositoryClient.primaryRepositoryAvailable());
-        modelUtilities = new TOSCAModelUtilities(wineryURL);
+        logger.info("Repository available?", repositoryClient.primaryRepositoryAvailable());
+        TOSCAModelUtilities.setWineryUrl(wineryURL);
+        this.repositoryClient = TOSCAModelUtilities.repositoryClient;
     }
-
-    private IWineryRepositoryClient repositoryClient = WineryRepositoryClientFactory.getWineryRepositoryClient();
-    private TOSCAModelUtilities modelUtilities;
 
     /**
      * Takes a topology template from the repository and generates a prolog file for this topology based on the metamodel.
@@ -108,7 +110,7 @@ public class PrologFactTopologyGenerator {
             }
         }
 
-        List<TNodeTemplate> nodesWithoutIncomingHostedOnRelationships = this.modelUtilities.getNodeTemplatesWithoutIncomingHostedOnRelationships(topologyTemplate);
+        List<TNodeTemplate> nodesWithoutIncomingHostedOnRelationships = TOSCAModelUtilities.getNodeTemplatesWithoutIncomingHostedOnRelationships(topologyTemplate);
 
         for (TNodeTemplate nodeTemplate : nodesWithoutIncomingHostedOnRelationships) {
             List<TNodeTemplate> hostStack = getHostStack(topologyTemplate, nodeTemplate);
@@ -126,12 +128,12 @@ public class PrologFactTopologyGenerator {
     private List<TNodeTemplate> getHostStack (TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
         List<TNodeTemplate> hostStack = new ArrayList<>();
         hostStack.add(nodeTemplate);
-        List<TNodeTemplate> hostedOnPredecessors = this.modelUtilities.getHostedOnSuccessorsOfNodeTemplate(topologyTemplate, nodeTemplate);
+        List<TNodeTemplate> hostedOnPredecessors = TOSCAModelUtilities.getHostedOnSuccessorsOfNodeTemplate(topologyTemplate, nodeTemplate);
         while(!hostedOnPredecessors.isEmpty()) {
             List<TNodeTemplate> transitiveHosts = new ArrayList<>();
             hostedOnPredecessors.stream().forEach(host -> {
                 hostStack.add(host);
-                transitiveHosts.addAll(this.modelUtilities.getHostedOnSuccessorsOfNodeTemplate(topologyTemplate, host));
+                transitiveHosts.addAll(TOSCAModelUtilities.getHostedOnSuccessorsOfNodeTemplate(topologyTemplate, host));
             });
             hostedOnPredecessors.clear();
             hostedOnPredecessors.addAll(transitiveHosts);
@@ -149,8 +151,7 @@ public class PrologFactTopologyGenerator {
             writer.write(topology);
             writer.close();
         } catch (IOException e) {
-            System.out.println("Could not write prolog program to fuke");
-            throw new IOException(e);
+            throw new IOException("Could not write topology facts", e);
         }
 
     }
