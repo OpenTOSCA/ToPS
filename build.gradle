@@ -1,0 +1,38 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.10.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+group = 'io.github.saatkamp'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+
+
+repositories {
+	mavenCentral()
+	maven { url 'https://opentosca.github.io/mvn-repo/' }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', includes: ['*.jar'])
+
+	compile('org.springframework.boot:spring-boot-starter-web')
+//    compile('org.eclipse.winery:org.eclipse.winery.repository.client:2.0.0-SNAPSHOT')
+//    compile('org.eclipse.winery:org.eclipse.winery.model.tosca:2.0.0-SNAPSHOT')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile 'com.vladsch.flexmark:flexmark-all:0.32.18'
+
+
+}
