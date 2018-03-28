@@ -1,3 +1,0 @@
-insecure_public_communication(X, Y).
-direct_access_to_restricted_environment(X, Y).
-distributed_messaging(X, C).

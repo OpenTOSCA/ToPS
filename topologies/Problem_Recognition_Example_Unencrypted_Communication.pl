@@ -1,41 +1,41 @@
 
 component(java7).
-component(php-5-module).
-component(php-5-webapplication).
-component(tomcat_7).
-component(apache-2_4).
-component(ubuntu-14_04-vm).
-component(ubuntu-14_04-vm_2).
-component(openstack-liberty-12).
+component(phpd4e5F65d4e5F6module).
+component(phpd4e5F65d4e5F6webapplication).
+component(tomcatg7h8I97).
+component(apached4e5F62g7h8I94).
+component(ubuntud4e5F614g7h8I904d4e5F6vm).
+component(ubuntud4e5F614g7h8I904d4e5F6vmg7h8I92).
+component(openstackd4e5F6libertyd4e5F612).
 component(vsphere5).
 component_of_type(java7, java7).
-component_of_type(php-5-module, php-5-module).
-component_of_type(php-5-webapplication, php-5-webapplication).
-component_of_type(tomcat_7, tomcat_7).
-component_of_type(apache-2_4, apache-2.4).
-component_of_type(ubuntu-14_04-vm, ubuntu-14.04-vm).
-component_of_type(ubuntu-14_04-vm_2, ubuntu-14.04-vm).
-component_of_type(openstack-liberty-12, openstack-liberty-12).
+component_of_type(phpd4e5F65d4e5F6module, phpd4e5F65d4e5F6module).
+component_of_type(phpd4e5F65d4e5F6webapplication, phpd4e5F65d4e5F6webapplication).
+component_of_type(tomcatg7h8I97, tomcatg7h8I97).
+component_of_type(apached4e5F62g7h8I94, apached4e5F62a1b2C34).
+component_of_type(ubuntud4e5F614g7h8I904d4e5F6vm, ubuntud4e5F614a1b2C304d4e5F6vm).
+component_of_type(ubuntud4e5F614g7h8I904d4e5F6vmg7h8I92, ubuntud4e5F614a1b2C304d4e5F6vm).
+component_of_type(openstackd4e5F6libertyd4e5F612, openstackd4e5F6libertyd4e5F612).
 component_of_type(vsphere5, vsphere5).
-relation(php-5-webapplication, java7, con_43).
-relation(php-5-webapplication, php-5-module, con_55).
-relation(php-5-module, apache-2_4, con_57).
-relation(apache-2_4, ubuntu-14_04-vm, con_69).
-relation(java7, tomcat_7, con_93).
-relation(tomcat_7, ubuntu-14_04-vm_2, con_105).
-relation(ubuntu-14_04-vm, openstack-liberty-12, con_101).
-relation(ubuntu-14_04-vm_2, vsphere5, con_113).
-relation_of_type(con_43, connectsto).
-relation_of_type(con_55, hostedon).
-relation_of_type(con_57, hostedon).
-relation_of_type(con_69, hostedon).
-relation_of_type(con_93, hostedon).
-relation_of_type(con_105, hostedon).
-relation_of_type(con_101, hostedon).
-relation_of_type(con_113, hostedon).
-property(con_43, sensitivedata, true
+relation(phpd4e5F65d4e5F6webapplication, java7, cong7h8I943).
+relation(phpd4e5F65d4e5F6webapplication, phpd4e5F65d4e5F6module, cong7h8I955).
+relation(phpd4e5F65d4e5F6module, apached4e5F62g7h8I94, cong7h8I957).
+relation(apached4e5F62g7h8I94, ubuntud4e5F614g7h8I904d4e5F6vm, cong7h8I969).
+relation(java7, tomcatg7h8I97, cong7h8I993).
+relation(tomcatg7h8I97, ubuntud4e5F614g7h8I904d4e5F6vmg7h8I92, cong7h8I9105).
+relation(ubuntud4e5F614g7h8I904d4e5F6vm, openstackd4e5F6libertyd4e5F612, cong7h8I9101).
+relation(ubuntud4e5F614g7h8I904d4e5F6vmg7h8I92, vsphere5, cong7h8I9113).
+relation_of_type(cong7h8I943, connectsto).
+relation_of_type(cong7h8I955, hostedon).
+relation_of_type(cong7h8I957, hostedon).
+relation_of_type(cong7h8I969, hostedon).
+relation_of_type(cong7h8I993, hostedon).
+relation_of_type(cong7h8I9105, hostedon).
+relation_of_type(cong7h8I9101, hostedon).
+relation_of_type(cong7h8I9113, hostedon).
+property(cong7h8I943, sensitivedata, true
                 ).
-property(openstack-liberty-12, location, 5).
+property(openstackd4e5F6libertyd4e5F612, location, 5).
 property(vsphere5, location, 3).
-hosting_stack([java7, tomcat_7, ubuntu-14_04-vm_2, vsphere5]).
-hosting_stack([php-5-webapplication, php-5-module, apache-2_4, ubuntu-14_04-vm, openstack-liberty-12]).
+hosting_stack([java7, tomcatg7h8I97, ubuntud4e5F614g7h8I904d4e5F6vmg7h8I92, vsphere5]).
+hosting_stack([phpd4e5F65d4e5F6webapplication, phpd4e5F65d4e5F6module, apached4e5F62g7h8I94, ubuntud4e5F614g7h8I904d4e5F6vm, openstackd4e5F6libertyd4e5F612]).
