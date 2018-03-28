@@ -9,10 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ProblemRecognizer {
@@ -22,8 +19,10 @@ public class ProblemRecognizer {
     private static final String TOPOLOGY_DIR = "topologies";
     private static Logger logger = LoggerFactory.getLogger(ProblemRecognizer.class);
     private List<Pattern> patternList;
+    private PrologNames prologNames;
 
-    public ProblemRecognizer() throws IOException {
+    public ProblemRecognizer(PrologNames prologNames) throws IOException {
+        this.prologNames = Objects.requireNonNull(prologNames);
         this.patternList = PatternFactory.createPatternList(PATTERN_DIR);
         String patternsString = patternList.stream()
                 .map(pattern -> pattern.getProblemRule()).collect(Collectors.joining("\n"));
@@ -61,8 +60,8 @@ public class ProblemRecognizer {
                 for (int i = 0; i < ss4.length; i++) {
                     Map<String, String> finding = new HashMap<>();
                     for (Map.Entry entry : ss4[i].entrySet()) {
-                        finding.put(entry.getKey().toString(), PrologNames.decode(entry.getValue().toString()));
-                        logger.info("This is the result for Variable {}: {}", entry.getKey(), PrologNames.decode(entry.getValue().toString()));
+                        finding.put(entry.getKey().toString(), prologNames.decode(entry.getValue().toString()));
+                        logger.info("This is the result for Variable {}: {}", entry.getKey(), prologNames.decode(entry.getValue().toString()));
                     }
                     occurence.addFinding(finding);
                 }

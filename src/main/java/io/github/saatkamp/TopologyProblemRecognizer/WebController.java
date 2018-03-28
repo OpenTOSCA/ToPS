@@ -21,9 +21,10 @@ public class WebController {
              @RequestParam("serviceTemplateID") String serviceTemplateID) throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
+        PrologNames prologNames = new PrologNames();
 
-        PrologFactTopologyGenerator generator = new PrologFactTopologyGenerator(wineryURL);
-        ProblemRecognizer recognizer = new ProblemRecognizer();
+        PrologFactTopologyGenerator generator = new PrologFactTopologyGenerator(wineryURL, prologNames);
+        ProblemRecognizer recognizer = new ProblemRecognizer(prologNames);
 
         ServiceTemplateId serviceTemplateId = new ServiceTemplateId(serviceTemplateNS, serviceTemplateID, false);
         QName serviceTemplateQName = new QName(serviceTemplateNS, serviceTemplateID);

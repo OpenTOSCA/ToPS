@@ -16,14 +16,17 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PrologFactTopologyGenerator {
 
     private IWineryRepositoryClient repositoryClient;
     private static Logger logger = LoggerFactory.getLogger(PrologFactTopologyGenerator.class);
+    private PrologNames prologNames;
 
-    public PrologFactTopologyGenerator(String wineryURL) {
+    public PrologFactTopologyGenerator(String wineryURL, PrologNames prologNames) {
         TOSCAModelUtilities.setWineryUrl(wineryURL);
+        this.prologNames = Objects.requireNonNull(prologNames);
         this.repositoryClient = TOSCAModelUtilities.repositoryClient;
         logger.info("Repository available?", repositoryClient.primaryRepositoryAvailable());
     }
@@ -43,15 +46,15 @@ public class PrologFactTopologyGenerator {
 
         //Transforms Node Templates in component([nodeTemplateID]).
         for(TNodeTemplate nodeTemplate: topologyTemplate.getNodeTemplates()) {
-            String id = PrologNames.encode(nodeTemplate.getId().toLowerCase());
+            String id = prologNames.encode(nodeTemplate.getId());
             plContent = plContent + "component(" + id + ")." + newline;
         }
 
         //Transforms Node Types contained in the topology in component_of_type([nodeTemplateID], [nodeTypeID]).
         for(TNodeTemplate nodeTemplate: topologyTemplate.getNodeTemplates()) {
             NodeTypeId nodeTypeId = new NodeTypeId(nodeTemplate.getType());
-            String componentID = PrologNames.encode(nodeTemplate.getId().toLowerCase());
-            String typeID = PrologNames.encode(nodeTypeId.getXmlId().toString().toLowerCase());
+            String componentID = prologNames.encode(nodeTemplate.getId());
+            String typeID = prologNames.encode(nodeTypeId.getXmlId().toString());
             //No Type checking of the Node Type - must be one of the normative types
             //TODO: An extenstion to type hierarchies is required to enable a check of supertypes
             plContent = plContent + "component_of_type(" + componentID + ", " + typeID + ")." + newline;
@@ -63,9 +66,9 @@ public class PrologFactTopologyGenerator {
                     = ModelUtilities.getSourceNodeTemplateOfRelationshipTemplate(topologyTemplate, relationshipTemplate);
             TNodeTemplate targetNodeTemplate
                     = ModelUtilities.getTargetNodeTemplateOfRelationshipTemplate(topologyTemplate, relationshipTemplate);
-            String sourceID = PrologNames.encode(sourceNodeTemplate.getId().toLowerCase());
-            String targetID = PrologNames.encode(targetNodeTemplate.getId().toLowerCase());
-            String relationID = PrologNames.encode(relationshipTemplate.getId().toLowerCase());
+            String sourceID = prologNames.encode(sourceNodeTemplate.getId());
+            String targetID = prologNames.encode(targetNodeTemplate.getId());
+            String relationID = prologNames.encode(relationshipTemplate.getId());
             plContent = plContent + "relation(" + sourceID +", " + targetID + ", " + relationID + ")." + newline;
         }
 
@@ -74,8 +77,8 @@ public class PrologFactTopologyGenerator {
             RelationshipTypeId relationshipTypeId = new RelationshipTypeId(relationshipTemplate.getType());
             //No Type checking of the Relationship Type - must be one of the normative types
             //TODO: An extenstion to type hierarchies is required to enable a check of supertypes
-            String relationID = PrologNames.encode(relationshipTemplate.getId().toLowerCase());
-            String typeID = PrologNames.encode(relationshipTypeId.getXmlId().toString().toLowerCase());
+            String relationID = prologNames.encode(relationshipTemplate.getId());
+            String typeID = prologNames.encode(relationshipTypeId.getXmlId().toString());
             plContent = plContent + "relation_of_type(" + relationID + ", " + typeID + ")." + newline;
         }
 
@@ -86,9 +89,9 @@ public class PrologFactTopologyGenerator {
                 if(kVProperties != null) {
                     for (Map.Entry<String, String> entry: kVProperties.entrySet()) {
                         if(entry.getValue() != "") {
-                            String relationID = PrologNames.encode(relationshipTemplate.getId().toLowerCase());
-                            String keyID = PrologNames.encode(entry.getKey().toLowerCase());
-                            String valueID = PrologNames.encode(entry.getValue().toLowerCase());
+                            String relationID = prologNames.encode(relationshipTemplate.getId());
+                            String keyID = prologNames.encode(entry.getKey());
+                            String valueID = prologNames.encode(entry.getValue());
                             plContent = plContent
                                     + "property(" + relationID + ", " + keyID + ", " + valueID + ")." + newline;
                         }
@@ -104,9 +107,9 @@ public class PrologFactTopologyGenerator {
                 if(kVProperties != null) {
                     for (Map.Entry<String, String> entry: kVProperties.entrySet()) {
                         if(entry.getValue() != "") {
-                            String nodeID = PrologNames.encode(nodeTemplate.getId().toLowerCase());
-                            String keyID = PrologNames.encode(entry.getKey().toLowerCase());
-                            String valueID = PrologNames.encode(entry.getValue().toLowerCase());
+                            String nodeID = prologNames.encode(nodeTemplate.getId());
+                            String keyID = prologNames.encode(entry.getKey());
+                            String valueID = prologNames.encode(entry.getValue());
                             plContent = plContent
                                     + "property(" + nodeID + ", " + keyID + ", " + valueID + ")." + newline;
                         }
@@ -119,10 +122,10 @@ public class PrologFactTopologyGenerator {
 
         for (TNodeTemplate nodeTemplate : nodesWithoutIncomingHostedOnRelationships) {
             List<TNodeTemplate> hostStack = getHostStack(topologyTemplate, nodeTemplate);
-            plContent = plContent + "hosting_stack([" + PrologNames.encode(hostStack.get(0).getId().toLowerCase());
+            plContent = plContent + "hosting_stack([" + prologNames.encode(hostStack.get(0).getId());
             hostStack.remove(0);
             for (TNodeTemplate hostingNode : hostStack) {
-                plContent = plContent + ", " + PrologNames.encode(hostingNode.getId().toLowerCase());
+                plContent = plContent + ", " + prologNames.encode(hostingNode.getId());
             }
             plContent = plContent + "])." + newline;
         }
