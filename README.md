@@ -1,5 +1,13 @@
 # Topology-ProDec - A Pattern-based Problem Detection Framework for TOSCA Topologies
 
+The Topology-ProDec can be used to identify problems in TOSCA topology templates. Based on known architecture and design knowledge in form of patterns these problems are formalized as Prolog rules. Patterns can be stored as markdown files with a predefined structure. Based on these pattern files a Prolog file is generated.
+A TOSCA topology template which shall be checked is transformed in aProlog file containing the topology elements as Prolog facts.
+The topology facts are checked with the contained patterns.
+
+
+## Project Structure
+An example is the [Secure Channel](https://github.com/saatkamp/topology-prodec/blob/master/pattern_prologfiles/SecureChannel.md).
+
 ## Setup
 
 1. Install SWI Prolog at your system - [SWI Download](http://www.swi-prolog.org/download/stable)
