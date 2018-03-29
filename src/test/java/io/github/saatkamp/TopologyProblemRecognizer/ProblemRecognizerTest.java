@@ -6,13 +6,15 @@ import org.springframework.util.Assert;
 public class ProblemRecognizerTest {
     @Test
     public void checkConstructor() throws Exception {
-        ProblemRecognizer problemRecognizer = new ProblemRecognizer();
+        PrologNames prologNames = new PrologNames();
+        ProblemRecognizer problemRecognizer = new ProblemRecognizer(prologNames);
         Assert.notNull(problemRecognizer);
     }
 
     @Test
     public void checkTopology() throws Exception {
-        ProblemRecognizer problemRecognizer = new ProblemRecognizer();
+        PrologNames prologNames = new PrologNames();
+        ProblemRecognizer problemRecognizer = new ProblemRecognizer(prologNames);
         problemRecognizer.checkTopology("topology");
         Assert.notNull(problemRecognizer);
     }
