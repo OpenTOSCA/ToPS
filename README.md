@@ -3,6 +3,7 @@
 The Topology-ProDec can be used to identify problems in TOSCA topology templates. Based on known architecture and design knowledge in form of patterns these problems are formalized as Prolog rules. Patterns can be stored as markdown files with a predefined structure. Based on these pattern files a Prolog file is generated.
 A TOSCA topology template which shall be checked is transformed in aProlog file containing the topology elements as Prolog facts.
 The topology facts are checked with the contained patterns.
+A JSON file with the detected problems are returned.
 
 
 ## Project Structure
