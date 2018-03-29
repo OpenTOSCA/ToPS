@@ -6,7 +6,8 @@ The topology facts are checked with the contained patterns.
 
 
 ## Project Structure
-An example is the [Secure Channel](https://github.com/saatkamp/topology-prodec/blob/master/pattern_prologfiles/SecureChannel.md).
+
+- All pattern markdown files are stored in [pattern-prologfiles](https://github.com/saatkamp/topology-prodec/tree/master/pattern_prologfiles). An example is the [Secure Channel](https://github.com/saatkamp/topology-prodec/blob/master/pattern_prologfiles/SecureChannel.md). This structure must also be adhered to for all other patterns.
 
 ## Setup
 
