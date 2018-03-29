@@ -8,7 +8,9 @@ The topology facts are checked with the contained patterns.
 ## Project Structure
 
 - All pattern markdown files are stored in [pattern-prologfiles](https://github.com/saatkamp/topology-prodec/tree/master/pattern_prologfiles). An example is the [Secure Channel](https://github.com/saatkamp/topology-prodec/blob/master/pattern_prologfiles/SecureChannel.md). This structure must also be adhered to for all other patterns.
-- A file containing all Prolog rules.
+- The generated file [patterns.pl](https://github.com/saatkamp/topology-prodec/blob/master/pattern_prologfiles/patterns.pl) contains all Prolog rules from the pattern files.
+- The [helper.pl](https://github.com/saatkamp/topology-prodec/blob/master/pattern_prologfiles/helper.pl) encompasses additinal rules which ease the description of the pattern rules.
+- The generated TOSCA topologies as Prolog facts are contained in the [topologies](https://github.com/saatkamp/topology-prodec/tree/master/topologies) folder.
 
 ## Setup
 
@@ -17,9 +19,13 @@ The topology facts are checked with the contained patterns.
 3. Make sure that a Winery instance is running under port 8080 - [Winery Setup Information](https://github.com/OpenTOSCA/winery)
 4. Checkout the topology-prodec repository and run the application
 5. Use a REST-Client to call the Topology-ProDec. A call must look like this:
+
 `http://[IP address]:[port]/recognize?wineryURL=[encoded Winery URL for the specific service template]`
+
 Example:
+
 `http://localhost:8090/recognize?wineryURL=http%3A%2F%2Flocalhost%3A8080%2Fwinery%2F&serviceTemplateNS=http%3A%2F%2Fwww.example.org%2Ftosca%2Fservicetemplates&serviceTemplateID=Problem_Recognition_Example_Unencrypted_Communication`
+
 6. As a result a JSON with the problem, the pattern, and the components for which the problem has been found are returned.
 
 ## Haftungsausschluss
