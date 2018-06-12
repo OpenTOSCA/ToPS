@@ -7,13 +7,9 @@ Direct access is restricted to the accessed component
 
 ```prolog
 direct_access_to_restricted_environment(Component_1, Component_2) :-
-	relation_of_type(Relation_ID, connectsto),
-	relation(Component_1, Component_2, Relation_ID),
+	direct_communication(Component_1, Component_2), 
 	components_in_different_locations(Component_1, Component_2),
-	property(H, inboundcommunication, false),
-	hosting_stack(S),
-	member(Component_2, S),
-	member(H, S).
+	component_in_restricted_environment(Component_2).
 ```
 
 ## Solution Description
