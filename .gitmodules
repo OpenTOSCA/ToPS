@@ -1,0 +1,3 @@
+[submodule "winery"]
+	path = winery
+	url = https://github.com/eclipse/winery.git
