@@ -11,7 +11,7 @@ import java.util.List;
 
 public class PatternFactory {
 
-    private static Logger logger = LoggerFactory.getLogger(ProblemRecognizer.class);
+    private static Logger logger = LoggerFactory.getLogger(PrologChecker.class);
 
     public static List<Pattern> createPatternList(String directoryPath) {
         PatternParser patternParser = new PatternParser();
@@ -33,6 +33,28 @@ public class PatternFactory {
             }
         }
         return patternList;
+    }
+
+    public static List<Solution> createSolutionList(String directoryPath) {
+        SolutionParser solutionParser = new SolutionParser();
+        List<Solution> solutionList = new ArrayList<>();
+        File solutionsFolder = new File(directoryPath);
+        if(solutionsFolder.isDirectory()) {
+            File[] listOfSolutionFiles = solutionsFolder.listFiles();
+            for (File solutionMD : listOfSolutionFiles) {
+                if(solutionMD.getName().endsWith(".md")) {
+
+                    try {
+                        Solution solution = solutionParser.parseSolutionMD(readFile(solutionMD));
+                        solutionList.add(solution);
+                    } catch (IOException e) {
+                        logger.error("Solution cannot be parsed >{}<", solutionMD.getName());
+                        logger.error(e.getMessage());
+                    }
+                }
+            }
+        }
+        return solutionList;
     }
 
     private static String readFile(File file) throws IOException {

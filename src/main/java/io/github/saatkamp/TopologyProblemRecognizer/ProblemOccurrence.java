@@ -1,48 +1,36 @@
 package io.github.saatkamp.TopologyProblemRecognizer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+@JsonRootName(value = "problemoccurrence")
+public class ProblemOccurrence extends ProblemEntity {
 
-@JsonRootName(value = "problemoccurence")
-public class ProblemOccurrence {
+    private String serviceTemplateID;
+    private Map<String, String> occurrence;
 
-    private String problem;
-    private String patternName;
-    private String solutionDescription;
-    private List<Map<String, String>> findings;
-
-    public ProblemOccurrence(String problem, String patternName, String solutionDescription) {
-        this.problem = problem;
-        this.patternName = patternName;
-        this.solutionDescription = solutionDescription;
-        findings = new ArrayList<>();
+    public ProblemOccurrence(String problem, String patternName, String solutionDescription, String serviceTemplateID, Map<String, String> occurrence) {
+        super(problem, patternName, solutionDescription);
+        this.serviceTemplateID = serviceTemplateID;
+        this.occurrence = occurrence;
     }
 
-    @JsonGetter("problem")
-    public String getProblem() {
-        return this.problem;
+    public ProblemOccurrence(String problem, String patternName, String solutionDescription, String serviceTemplateID) {
+        super(problem, patternName, solutionDescription);
+        this.serviceTemplateID = serviceTemplateID;
+        this.occurrence = new HashMap<>();
     }
 
-    @JsonGetter("pattern")
-    public String getPatternName() {
-        return this.patternName;
+    @JsonGetter("servicetemplateID")
+    public String getServiceTemplateID() {
+        return serviceTemplateID;
     }
 
-    @JsonGetter("description")
-    public String getSolutionDescription() {
-        return this.solutionDescription;
-    }
-
-    @JsonGetter("findings")
-    public List<Map<String, String>> getFindings() {
-        return findings;
-    }
-
-    public void addFinding(Map<String, String> finding) {
-        this.findings.add(finding);
+    @JsonGetter("occurrence")
+    public Map<String, String> getOccurrence() {
+        return occurrence;
     }
 }

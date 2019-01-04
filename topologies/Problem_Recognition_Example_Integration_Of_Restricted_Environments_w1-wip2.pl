@@ -49,6 +49,12 @@ relation_of_type(cong7h8i99, hostedon).
 relation_of_type(cong7h8i910, hostedon).
 relation_of_type(cong7h8i911, hostedon).
 relation_of_type(cong7h8i912, hostedon).
+property(ubuntud4e5f614a1b2c304d4e5f6vmg7h8i9w1d4e5f6wip1, inboundcommunication, false).
+property(ubuntud4e5f614a1b2c304d4e5f6vmg7h8i9w1d4e5f6wip1g7h8i92, inboundcommunication, false).
+property(ubuntud4e5f614a1b2c304d4e5f6vmg7h8i9w1d4e5f6wip1g7h8i93, inboundcommunication, false).
+property(vsphereg7h8i95a1b2c35, location, 3).
+property(openstackd4e5f6libertyd4e5f612, location, 1).
+property(openstackd4e5f6libertyd4e5f612g7h8i92, location, 1).
 hosting_stack([java8, tomcat8, ubuntud4e5f614a1b2c304d4e5f6vmg7h8i9w1d4e5f6wip1g7h8i93, vsphereg7h8i95a1b2c35]).
 hosting_stack([phpd4e5f65d4e5f6webapplication, phpd4e5f65d4e5f6module, apached4e5f62a1b2c34, ubuntud4e5f614a1b2c304d4e5f6vmg7h8i9w1d4e5f6wip1, openstackd4e5f6libertyd4e5f612]).
 hosting_stack([channelg7h8i9w1d4e5f6wip1, mosquittog7h8i93a1b2c31, ubuntud4e5f614a1b2c304d4e5f6vmg7h8i9w1d4e5f6wip1g7h8i92, openstackd4e5f6libertyd4e5f612g7h8i92]).

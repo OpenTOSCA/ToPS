@@ -3,20 +3,20 @@ package io.github.saatkamp.TopologyProblemRecognizer;
 import org.junit.Test;
 import org.springframework.util.Assert;
 
-public class ProblemRecognizerTest {
+public class PrologCheckerTest {
     @Test
     public void checkConstructor() throws Exception {
         PrologNames prologNames = new PrologNames();
-        ProblemRecognizer problemRecognizer = new ProblemRecognizer(prologNames);
-        Assert.notNull(problemRecognizer);
+        PrologChecker prologChecker = new PrologChecker(prologNames);
+        Assert.notNull(prologChecker);
     }
 
     @Test
     public void checkTopology() throws Exception {
         PrologNames prologNames = new PrologNames();
-        ProblemRecognizer problemRecognizer = new ProblemRecognizer(prologNames);
-        problemRecognizer.checkTopology("topology");
-        Assert.notNull(problemRecognizer);
+        PrologChecker prologChecker = new PrologChecker(prologNames);
+        prologChecker.checkTopology("topology");
+        Assert.notNull(prologChecker);
     }
 
 }
