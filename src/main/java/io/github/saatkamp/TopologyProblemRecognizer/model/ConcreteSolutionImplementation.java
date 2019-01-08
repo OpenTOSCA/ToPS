@@ -1,4 +1,4 @@
-package io.github.saatkamp.TopologyProblemRecognizer;
+package io.github.saatkamp.TopologyProblemRecognizer.model;
 
 public class ConcreteSolutionImplementation {
 

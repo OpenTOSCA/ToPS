@@ -1,5 +1,7 @@
-package io.github.saatkamp.TopologyProblemRecognizer;
+package io.github.saatkamp.TopologyProblemRecognizer.model;
 
+import io.github.saatkamp.TopologyProblemRecognizer.PrologChecker;
+import io.github.saatkamp.TopologyProblemRecognizer.SolutionParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

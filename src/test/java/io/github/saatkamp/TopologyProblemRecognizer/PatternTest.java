@@ -3,6 +3,8 @@ package io.github.saatkamp.TopologyProblemRecognizer;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.saatkamp.TopologyProblemRecognizer.model.Pattern;
+import io.github.saatkamp.TopologyProblemRecognizer.model.Solution;
 import org.junit.Assert;
 import org.junit.Test;
 

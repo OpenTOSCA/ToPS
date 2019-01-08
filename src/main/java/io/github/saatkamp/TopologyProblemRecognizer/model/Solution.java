@@ -1,31 +1,17 @@
-package io.github.saatkamp.TopologyProblemRecognizer;
+package io.github.saatkamp.TopologyProblemRecognizer.model;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-public class Solution {
+public class Solution extends SolutionEntity{
 
-    private String name;
-    private String description;
     private List<String> relatedPatternsList;
     private String selectionCriteriaRule;
-    private ConcreteSolutionImplementation csi;
 
     public Solution(String name, String description, List<String> relatedPatternsList, String selectionCriteriaRule, ConcreteSolutionImplementation csi) {
-        this.name = name;
+        super(name, description, csi);
         this.relatedPatternsList = relatedPatternsList;
-        this.description = description;
         this.selectionCriteriaRule = selectionCriteriaRule;
-        this.csi = csi;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public List<String> getRelatedPatternsList() {
@@ -36,17 +22,13 @@ public class Solution {
         return selectionCriteriaRule;
     }
 
-    public ConcreteSolutionImplementation getConcreteSolutionImplementation() {
-        return csi;
-    }
-
-    public String getContextSpecificQuery(Map<String, String> replacementList) {
+    public String getContextSpecificQuery(List<ComponentFinding> replacementList) {
         String query;
         int index = this.selectionCriteriaRule.indexOf(" :-");
         query = this.selectionCriteriaRule.substring(0, index) + ".";
 
-        for (Map.Entry<String, String> entry : replacementList.entrySet()) {
-           query = query.replaceAll(entry.getKey(), entry.getValue());
+        for (ComponentFinding entry : replacementList) {
+           query = query.replaceAll(entry.getPlaceholder(), entry.getComponentId());
         }
 
         return query;

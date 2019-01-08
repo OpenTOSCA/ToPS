@@ -27,7 +27,7 @@ A JSON file with the detected problems are returned.
 
 Example:
 
-`http://localhost:8090/recognize?wineryURL=http%3A%2F%2Flocalhost%3A8080%2Fwinery%2F&serviceTemplateNS=http%3A%2F%2Fwww.example.org%2Ftosca%2Fservicetemplates&serviceTemplateID=Problem_Recognition_Example_Unencrypted_Communication`
+`http://localhost:8090/recognize?wineryURL=http%3A%2F%2Flocalhost%3A8080%2Fwinery%2F&serviceTemplateNS=http%3A%2F%2Fwww.example.org%2Ftosca%2Fservicetemplates&serviceTemplateId=Problem_Recognition_Example_Unencrypted_Communication`
 
 6. As a result a JSON with the problem, the pattern, and the components for which the problem has been found are returned.
 

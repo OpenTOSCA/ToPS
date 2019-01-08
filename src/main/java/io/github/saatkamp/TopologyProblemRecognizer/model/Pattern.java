@@ -1,4 +1,4 @@
-package io.github.saatkamp.TopologyProblemRecognizer;
+package io.github.saatkamp.TopologyProblemRecognizer.model;
 
 import java.util.List;
 import java.util.Objects;

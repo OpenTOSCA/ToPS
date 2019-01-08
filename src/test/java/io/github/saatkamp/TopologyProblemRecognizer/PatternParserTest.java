@@ -1,5 +1,7 @@
 package io.github.saatkamp.TopologyProblemRecognizer;
 
+import io.github.saatkamp.TopologyProblemRecognizer.model.Pattern;
+import io.github.saatkamp.TopologyProblemRecognizer.model.PatternParser;
 import org.junit.Assert;
 import org.junit.Test;
 

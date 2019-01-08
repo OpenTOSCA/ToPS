@@ -8,6 +8,8 @@ import com.vladsch.flexmark.ast.Node;
 import com.vladsch.flexmark.ast.NodeIterator;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.collection.iteration.ReversiblePeekingIterable;
+import io.github.saatkamp.TopologyProblemRecognizer.model.ConcreteSolutionImplementation;
+import io.github.saatkamp.TopologyProblemRecognizer.model.Solution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,8 +1,16 @@
 package io.github.saatkamp.TopologyProblemRecognizer;
 
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
+
+import io.github.saatkamp.TopologyProblemRecognizer.model.ComponentFinding;
+import io.github.saatkamp.TopologyProblemRecognizer.model.ProblemFindings;
+import io.github.saatkamp.TopologyProblemRecognizer.model.ProblemOccurrence;
+import io.github.saatkamp.TopologyProblemRecognizer.model.Solution;
+import io.github.saatkamp.TopologyProblemRecognizer.model.SolutionInputData;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,11 +18,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.namespace.QName;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 public class WebController {
+
+    private PrologNames prologNames = new PrologNames();
+
 
     @GetMapping("/checkProblems")
     public String getRecognizedProblemsInTopology
@@ -25,12 +39,9 @@ public class WebController {
         long start = System.currentTimeMillis();
 
         ObjectMapper mapper = new ObjectMapper();
-        PrologNames prologNames = new PrologNames();
-
         PrologFactTopologyGenerator generator = new PrologFactTopologyGenerator(wineryURL, prologNames);
         PrologChecker recognizer = new PrologChecker(prologNames);
 
-        ServiceTemplateId serviceTemplateId = new ServiceTemplateId(serviceTemplateNS, serviceTemplateID, false);
         QName serviceTemplateQName = new QName(serviceTemplateNS, serviceTemplateID);
         generator.generatePrologFileForTopology(serviceTemplateQName);
         List<ProblemFindings> problemFindingsList = recognizer.checkTopology(serviceTemplateID);
@@ -45,17 +56,28 @@ public class WebController {
         return mapper.writeValueAsString(problemFindingsList);
     }
 
+    @GetMapping("/testdata")
+    public ProblemOccurrence getTestData() throws JsonProcessingException {
+        List<ComponentFinding> testData = new ArrayList<>();
+        ComponentFinding finding1 = new ComponentFinding("Component1", "PHPApp");
+        ComponentFinding finding2 = new ComponentFinding("Component2", "JavaAPP");
+        testData.add(finding1);
+        testData.add(finding2);
+
+        ProblemOccurrence occurrence = new ProblemOccurrence("test", "test",
+                "test", "test00", "test", testData);
+
+        return occurrence;
+    }
+
     @PostMapping("/findSolutions")
-    public String getMatchingSolutionsForProblem (@RequestBody ProblemOccurrence problemOccurrence) throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper();
-        PrologNames prologNames = new PrologNames();
+    public String getMatchingSolutionsForProblem(@RequestBody ProblemOccurrence problemOccurrence) throws IOException {
         PrologChecker checker = new PrologChecker(prologNames);
+        ObjectMapper mapper = new ObjectMapper();
 
-        List<Solution> solutions = checker.findSolutions(problemOccurrence.getServiceTemplateID(),
-                problemOccurrence.getProblem(), problemOccurrence.getOccurrence());
+        List<SolutionInputData> solutions = checker.findSolutions(problemOccurrence.getServiceTemplateId(),
+                problemOccurrence.getPatternName(), problemOccurrence.getOccurrence());
 
         return mapper.writeValueAsString(solutions);
     }
-
 }

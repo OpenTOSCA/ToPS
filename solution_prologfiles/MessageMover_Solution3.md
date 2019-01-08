@@ -13,7 +13,7 @@ Using this mechanism the communication is encrypted on level 3 of the ISO/OSI-Mo
 ## Selection Criteria
 
 ```prolog
-ipsec(Component_1, Component_2) :-
+nocheintest(Component_1, Component_2) :-
    host_is_vm(Component_1),
    host_is_vm(Component_2).
 ```

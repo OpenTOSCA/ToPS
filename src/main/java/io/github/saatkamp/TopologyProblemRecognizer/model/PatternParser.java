@@ -1,15 +1,8 @@
-package io.github.saatkamp.TopologyProblemRecognizer;
+package io.github.saatkamp.TopologyProblemRecognizer.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.vladsch.flexmark.ast.BulletListItem;
 import com.vladsch.flexmark.ast.Node;
 import com.vladsch.flexmark.ast.NodeIterator;
-import com.vladsch.flexmark.ast.NodeVisitor;
 import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.collection.iteration.ReversiblePeekingIterable;
-import com.vladsch.flexmark.util.sequence.BasedSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

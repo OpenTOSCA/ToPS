@@ -1,4 +1,4 @@
-package io.github.saatkamp.TopologyProblemRecognizer;
+package io.github.saatkamp.TopologyProblemRecognizer.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 
@@ -7,6 +7,10 @@ public abstract class ProblemEntity {
     private String problem;
     private String patternName;
     private String solutionDescription;
+
+    public ProblemEntity(){
+
+    }
 
     public ProblemEntity(String problem, String patternName, String solutionDescription) {
         this.problem = problem;
