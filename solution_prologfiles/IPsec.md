@@ -20,6 +20,6 @@ ipsec(Component_1, Component_2) :-
 
 ## Concrete Solution Implementation
 
-[Winery Algorithm](https://github.com/eclipse/winery)
+[IPsec](https://github.com/eclipse/winery)
 
 

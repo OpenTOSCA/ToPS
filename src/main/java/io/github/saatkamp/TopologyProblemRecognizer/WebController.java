@@ -1,14 +1,15 @@
 package io.github.saatkamp.TopologyProblemRecognizer;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
-
 import io.github.saatkamp.TopologyProblemRecognizer.model.ComponentFinding;
 import io.github.saatkamp.TopologyProblemRecognizer.model.ProblemFindings;
 import io.github.saatkamp.TopologyProblemRecognizer.model.ProblemOccurrence;
-import io.github.saatkamp.TopologyProblemRecognizer.model.Solution;
 import io.github.saatkamp.TopologyProblemRecognizer.model.SolutionInputData;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,28 +18,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.xml.namespace.QName;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @CrossOrigin
 public class WebController {
 
     private PrologNames prologNames = new PrologNames();
 
-
     @GetMapping("/checkProblems")
-    public String getRecognizedProblemsInTopology
+    public List<ProblemFindings> getRecognizedProblemsInTopology
             (@RequestParam("wineryURL") String wineryURL,
              @RequestParam("serviceTemplateNS") String serviceTemplateNS,
              @RequestParam("serviceTemplateID") String serviceTemplateID) throws IOException {
 
         long start = System.currentTimeMillis();
 
-        ObjectMapper mapper = new ObjectMapper();
         PrologFactTopologyGenerator generator = new PrologFactTopologyGenerator(wineryURL, prologNames);
         PrologChecker recognizer = new PrologChecker(prologNames);
 
@@ -53,7 +46,7 @@ public class WebController {
         System.out.println("End Time:" + runningTime);
         System.out.println("Required Time:" + requiredTime + "ms");
 
-        return mapper.writeValueAsString(problemFindingsList);
+        return problemFindingsList;
     }
 
     @GetMapping("/testdata")
@@ -71,13 +64,12 @@ public class WebController {
     }
 
     @PostMapping("/findSolutions")
-    public String getMatchingSolutionsForProblem(@RequestBody ProblemOccurrence problemOccurrence) throws IOException {
+    public List<SolutionInputData> getMatchingSolutionsForProblem(@RequestBody ProblemOccurrence problemOccurrence) throws IOException {
         PrologChecker checker = new PrologChecker(prologNames);
-        ObjectMapper mapper = new ObjectMapper();
 
         List<SolutionInputData> solutions = checker.findSolutions(problemOccurrence.getServiceTemplateId(),
                 problemOccurrence.getPatternName(), problemOccurrence.getOccurrence());
 
-        return mapper.writeValueAsString(solutions);
+        return solutions;
     }
 }
