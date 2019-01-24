@@ -14,8 +14,8 @@ Using this mechanism the communication is encrypted on level 3 of the ISO/OSI-Mo
 
 ```prolog
 ipsec(Component_1, Component_2) :-
-   host_is_vm(Component_1),
-   host_is_vm(Component_2).
+   host(Component_1, Host_1, ubuntud4e5f614a1b2c304d4e5f6vm),
+   host(Component_2, Host_2, ubuntud4e5f614a1b2c304d4e5f6vm).
 ```
 
 ## Concrete Solution Implementation

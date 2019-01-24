@@ -9,3 +9,9 @@ host_is_container(Component) :-
    member(Component, S),
    member(H, S),
    component_of_type(H, container).
+
+host(Component, Host, Type) :-
+   hosting_stack(S),
+   member(Component, S),
+   member(Host, S),
+   component_of_type(Host, Type).
