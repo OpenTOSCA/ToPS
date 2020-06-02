@@ -1,3 +1,4 @@
+# build gradle project in first step
 FROM openjdk:8 AS BUILD_IMAGE
 LABEL maintainer = "Tobias Mathony <mathony.tobias@gmail.com>"
 COPY . .
