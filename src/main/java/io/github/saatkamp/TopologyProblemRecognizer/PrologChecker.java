@@ -1,5 +1,16 @@
 package io.github.saatkamp.TopologyProblemRecognizer;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import io.github.saatkamp.TopologyProblemRecognizer.model.ComponentFinding;
 import io.github.saatkamp.TopologyProblemRecognizer.model.Pattern;
 import io.github.saatkamp.TopologyProblemRecognizer.model.PatternFactory;
@@ -10,13 +21,6 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class PrologChecker {
 
@@ -41,7 +45,7 @@ public class PrologChecker {
             if (prologFile.getName().endsWith(".pl")) {
                 String initQueryExpr = "consult('" + directoryName + "/" + prologFile.getName() + "')";
                 Query query = new Query(initQueryExpr);
-                logger.info("File: {} consulting finished with {}", prologFile.getName(), query.hasSolution());
+                logger.info("File: {} consulting finished with {}", prologFile.getName(), (query.hasSolution()));
             }
         }
     }
@@ -70,7 +74,8 @@ public class PrologChecker {
 
         for (Pattern pattern : patternList) {
             String problemQuery = pattern.getQuery();
-            if (Query.hasSolution(problemQuery)) {
+            Query queryProblem = new Query(problemQuery);
+            if (queryProblem.hasSolution()) {
                 ProblemFindings findings = new ProblemFindings(pattern.getProblem(), pattern.getName(), pattern.getSolutionDescription());
                 Map<String, Term>[] ss4 = Query.allSolutions(problemQuery);
                 logger.info("all solutions of {}", problemQuery);
