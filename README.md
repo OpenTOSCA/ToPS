@@ -17,7 +17,7 @@ A JSON file with the detected problems are returned.
 
 ## Setup
 
-1. Install SWI Prolog at your system - [SWI Download](http://www.swi-prolog.org/download/stable)
+1. Install SWI Prolog at your system - [SWI Download](http://www.swi-prolog.org/download/stable) NOTE: SWI Prolog Version 8.0.3 is tested!
 2. Add SWI to the environment variable PATH of your system (e.g. C:\Program Files\swipl\bin)
 3. Make sure that a Winery instance is running under port 8080 - [Winery Setup Information](https://github.com/OpenTOSCA/winery)
 4. Checkout the topology-prodec repository and run the application
