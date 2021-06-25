@@ -1,9 +1,7 @@
 # Secure Channel
 
-## Problem and Context
-How do we ensure that data being passed across public or semi-public space is secure in transit?
-
-The system delivers functionality and information to the clients across the public Internet through one or more Web servers. [...] The application must exchange data with the client. A percentage of this data will be sensitive in nature.
+## Problem
+Insecure Communication
 
 ## Problem Rule
 
