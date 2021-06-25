@@ -21,13 +21,24 @@ hybrid_environment(Component_1, Component_2) :-
     not(component_in_restricted_environment(Component_2)).
 
 direct_communication(Component_1, Component_2) :-
-    relation_of_type(Relation_ID, httpconnectsto),
-    relation(Component_1, Component_2, Relation_ID),
-    not(component_of_type(Component_2, channelg7h8i9w1d4e5f6wip1)).
+    relation(Relation_ID, Component_1, Component_2),
+    relation_types(RT),
+    member(Relation_ID, RT),
+    member(connectsto, RT),
+    component_types(CT),
+    member(Component_2, CT),
+    not(member(channel, CT)).
+
 
 messaging_communication(Channel, Component_1, Component_2) :-
-    component_of_type(Channel, channelg7h8i9w1d4e5f6wip1),
-    relation(Component_1, Channel, Relation1),
-    relation(Component_2, Channel, Relation2),
-    relation_of_type(Relation1, httpconnectsto),
-    relation_of_type(Relation2, httpconnectsto).
+    component_types(CT),
+    member(Channel, CT),
+    member(channel, CT),
+    relation(Relation1, Component_1, Channel),
+    relation(Relation2, Component_2, Channel),
+    relation_types(RT1),
+    member(Relation1, RT1),
+    member(connectsto, RT1),
+    relation_types(RT2),
+    member(Relation1, RT2),
+    member(connectsto, RT2).

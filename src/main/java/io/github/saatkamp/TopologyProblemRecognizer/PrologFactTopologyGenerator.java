@@ -3,7 +3,9 @@ package io.github.saatkamp.TopologyProblemRecognizer;
 import org.eclipse.winery.common.ids.definitions.NodeTypeId;
 import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
+import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.model.tosca.TRelationshipTemplate;
+import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.client.IWineryRepositoryClient;
@@ -56,8 +58,19 @@ public class PrologFactTopologyGenerator {
             String componentID = prologNames.encode(nodeTemplate.getId());
             String typeID = prologNames.encode(nodeTypeId.getXmlId().toString());
             //No Type checking of the Node Type - must be one of the normative types
-            //TODO: An extenstion to type hierarchies is required to enable a check of supertypes
             plContent = plContent + "component_of_type(" + componentID + ", " + typeID + ")." + newline;
+
+            //An extenstion to type hierarchies to enable a check of supertypes as component_types([relationID, typeID, superTypeID, ...]).
+            List<NodeTypeId> superNodeTypesIDs = getSuperNodeTypesIDs(nodeTemplate);
+            //Only if more than the direct type is in the list of superTypes this fact has to be added
+            if(superNodeTypesIDs.size() > 1) {
+                plContent = plContent + "component_types([" + componentID;
+                for (NodeTypeId id: superNodeTypesIDs) {
+                    plContent = plContent + ", " + prologNames.encode(id.getXmlId().toString());
+                }
+                plContent = plContent + "])." + newline;
+            }
+
         }
 
         //Transforms Relationship Templates in relation([sourceNodeTemplateID], [targetNodeTemplateID], [relationshipTemplateID]).
@@ -69,7 +82,18 @@ public class PrologFactTopologyGenerator {
             String sourceID = prologNames.encode(sourceNodeTemplate.getId());
             String targetID = prologNames.encode(targetNodeTemplate.getId());
             String relationID = prologNames.encode(relationshipTemplate.getId());
-            plContent = plContent + "relation(" + sourceID +", " + targetID + ", " + relationID + ")." + newline;
+            plContent = plContent + "relation(" + relationID +", " + sourceID + ", " + targetID + ")." + newline;
+
+            //An extenstion to type hierarchies to enable a check of supertypes as relation_types([relationID, typeID, superTypeID, ...]).
+            List<RelationshipTypeId> superRelationshipTypesIDs = getSuperRelationshipTypesIDs(relationshipTemplate);
+            //Only if more than the direct type is in the list of superTypes this fact has to be added
+            if(superRelationshipTypesIDs.size() > 1) {
+                plContent = plContent + "relation_types([" + relationID;
+                for (RelationshipTypeId id: superRelationshipTypesIDs) {
+                    plContent = plContent + ", " + prologNames.encode(id.getXmlId().toString());
+                }
+                plContent = plContent + "])." + newline;
+            }
         }
 
         //Transforms Relationship Types contained in the topology in relation_of_type([relationshipTemplateID], [relationshipTypeID]).
@@ -149,6 +173,36 @@ public class PrologFactTopologyGenerator {
 
 
         return  hostStack;
+    }
+
+    private List<NodeTypeId> getSuperNodeTypesIDs (TNodeTemplate nodeTemplate) {
+        List<NodeTypeId> superNodeTypesIDs = new ArrayList<>();
+        //Add NodeTemplate Type to the List
+        NodeTypeId typeId = new NodeTypeId(nodeTemplate.getType());
+        superNodeTypesIDs.add(typeId);
+        TNodeType type = this.repositoryClient.getElement(typeId);
+        //Add all further superTypes to the list
+        while (type.getDerivedFrom() != null) {
+            QName superTypeQName = type.getDerivedFrom().getType();
+            superNodeTypesIDs.add(new NodeTypeId(superTypeQName));
+            type = this.repositoryClient.getElement(new NodeTypeId(superTypeQName));
+        }
+        return superNodeTypesIDs;
+    }
+
+    private List<RelationshipTypeId> getSuperRelationshipTypesIDs (TRelationshipTemplate relationshipTemplate) {
+        List<RelationshipTypeId> superRelationshipTypesIDs = new ArrayList<>();
+        //Add NodeTemplate Type to the List
+        RelationshipTypeId typeId = new RelationshipTypeId(relationshipTemplate.getType());
+        superRelationshipTypesIDs.add(typeId);
+        TRelationshipType type = this.repositoryClient.getElement(typeId);
+        //Add all further superTypes to the list
+        while (type.getDerivedFrom() != null) {
+            QName superTypeQName = type.getDerivedFrom().getType();
+            superRelationshipTypesIDs.add(new RelationshipTypeId(superTypeQName));
+            type = this.repositoryClient.getElement(new RelationshipTypeId(superTypeQName));
+        }
+        return superRelationshipTypesIDs;
     }
 
     private void persistPrologFile (String topology, String fileName) throws IOException {

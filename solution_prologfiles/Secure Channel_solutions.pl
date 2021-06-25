@@ -1,9 +1,11 @@
 ipsec(Component_1, Component_2) :-
-   host(Component_1, Host_1, ubuntud4e5f614a1b2c304d4e5f6vm),
-   host(Component_2, Host_2, ubuntud4e5f614a1b2c304d4e5f6vm).
+   host(Component_1, Host_1, vm),
+   host(Component_2, Host_2, vm).
 
 tlsonvm(Component_1, Component_2) :-
-   host(Component_1, Host_1, ubuntud4e5f614a1b2c304d4e5f6vm),
-   host(Component_2, Host_2, ubuntud4e5f614a1b2c304d4e5f6vm),
-   relation_of_type(Relation_ID, httpconnectsto),
-   relation(Component_1, Component_2, Relation_ID).
+   host(Component_1, Host_1, vm),
+   host(Component_2, Host_2, vm),
+   relation(Relation_ID, Component_1, Component_2),
+   relation_types(RT),
+   member(Relation_ID, RT),
+   member(httpconnectsto, RT).

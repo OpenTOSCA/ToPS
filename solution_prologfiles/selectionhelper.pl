@@ -14,4 +14,6 @@ host(Component, Host, Type) :-
    hosting_stack(S),
    member(Component, S),
    member(Host, S),
-   component_of_type(Host, Type).
+   component_types(CT),
+   member(Host, CT),
+   member(Type, CT).
