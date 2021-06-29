@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: Start SWI Prolog
+        run: swipl &
       - name: Build with Gradle
-        run: |
-          swipl &
-          /gradlew build
+        run: /gradlew build
