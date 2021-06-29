@@ -60,17 +60,14 @@ public class PrologFactTopologyGenerator {
             //No Type checking of the Node Type - must be one of the normative types
             plContent = plContent + "component_of_type(" + componentID + ", " + typeID + ")." + newline;
 
-            //An extenstion to type hierarchies to enable a check of supertypes as component_types([relationID, typeID, superTypeID, ...]).
+            //An extension to type hierarchies to enable a check of supertypes as component_types([relationID, typeID, superTypeID, ...]).
             List<NodeTypeId> superNodeTypesIDs = getSuperNodeTypesIDs(nodeTemplate);
             //Only if more than the direct type is in the list of superTypes this fact has to be added
-            if(superNodeTypesIDs.size() > 1) {
-                plContent = plContent + "component_types([" + componentID;
-                for (NodeTypeId id: superNodeTypesIDs) {
-                    plContent = plContent + ", " + prologNames.encode(id.getXmlId().toString());
-                }
-                plContent = plContent + "])." + newline;
+            plContent = plContent + "component_types([" + componentID;
+            for (NodeTypeId id: superNodeTypesIDs) {
+                plContent = plContent + ", " + prologNames.encode(id.getXmlId().toString());
             }
-
+            plContent = plContent + "])." + newline;
         }
 
         //Transforms Relationship Templates in relation([sourceNodeTemplateID], [targetNodeTemplateID], [relationshipTemplateID]).
@@ -84,16 +81,14 @@ public class PrologFactTopologyGenerator {
             String relationID = prologNames.encode(relationshipTemplate.getId());
             plContent = plContent + "relation(" + relationID +", " + sourceID + ", " + targetID + ")." + newline;
 
-            //An extenstion to type hierarchies to enable a check of supertypes as relation_types([relationID, typeID, superTypeID, ...]).
+            //An extension to type hierarchies to enable a check of supertypes as relation_types([relationID, typeID, superTypeID, ...]).
             List<RelationshipTypeId> superRelationshipTypesIDs = getSuperRelationshipTypesIDs(relationshipTemplate);
             //Only if more than the direct type is in the list of superTypes this fact has to be added
-            if(superRelationshipTypesIDs.size() > 1) {
-                plContent = plContent + "relation_types([" + relationID;
-                for (RelationshipTypeId id: superRelationshipTypesIDs) {
-                    plContent = plContent + ", " + prologNames.encode(id.getXmlId().toString());
-                }
-                plContent = plContent + "])." + newline;
+            plContent = plContent + "relation_types([" + relationID;
+            for (RelationshipTypeId id: superRelationshipTypesIDs) {
+                plContent = plContent + ", " + prologNames.encode(id.getXmlId().toString());
             }
+            plContent = plContent + "])." + newline;
         }
 
         //Transforms Relationship Types contained in the topology in relation_of_type([relationshipTemplateID], [relationshipTypeID]).
