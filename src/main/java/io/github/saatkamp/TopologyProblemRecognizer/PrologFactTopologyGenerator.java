@@ -7,6 +7,7 @@ import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.model.tosca.TRelationshipTemplate;
 import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.constants.Namespaces;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.client.IWineryRepositoryClient;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class PrologFactTopologyGenerator {
 
@@ -137,6 +139,27 @@ public class PrologFactTopologyGenerator {
             }
         }
 
+        //Add special location property to the facts
+        for (TNodeTemplate nodeTemplate: topologyTemplate.getNodeTemplates()) {
+            Optional<String> location = getNodeTemplateLocation(nodeTemplate);
+            String nodeID = prologNames.encode(nodeTemplate.getId());
+            if (location.isPresent()){
+                String propertykey = prologNames.encode("location");
+                String value = prologNames.encode(location.get());
+                plContent = plContent
+                        + "property(" + nodeID + ", " + propertykey + ", " + value + ")." + newline;
+            }
+            //Without specific information about the Hosting Environment we assume restricted environments to enable the user to
+            //Select if these problems will occur
+            if (unspecifiedInfrastructure(nodeTemplate)){
+                String propertykey = prologNames.encode("inboundcommunication");
+                String value = prologNames.encode("false");
+                plContent = plContent
+                        + "property(" + nodeID + ", " + propertykey + ", " + value + ")." + newline;
+            }
+        }
+
+
         List<TNodeTemplate> nodesWithoutIncomingHostedOnRelationships = TOSCAModelUtilities.getNodeTemplatesWithoutIncomingHostedOnRelationships(topologyTemplate);
 
         for (TNodeTemplate nodeTemplate : nodesWithoutIncomingHostedOnRelationships) {
@@ -198,6 +221,37 @@ public class PrologFactTopologyGenerator {
             type = this.repositoryClient.getElement(new RelationshipTypeId(superTypeQName));
         }
         return superRelationshipTypesIDs;
+    }
+
+    private Optional<String> getNodeTemplateLocation(TNodeTemplate nodeTemplate) {
+        QName location = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "location");
+        QName participant = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE,
+                "participant");
+
+        if (nodeTemplate == null) {
+            return Optional.empty();
+        }
+        Map<QName, String> otherAttributes = nodeTemplate.getOtherAttributes();
+        String targetLabel = new String();
+        targetLabel = otherAttributes.get(location);
+
+        if (targetLabel == null || targetLabel != null && (targetLabel.equals("undefined") || targetLabel.equals(""))) {
+            String partner = new String();
+            partner = otherAttributes.get(participant);
+            if (partner == null || partner != null && (partner.equals("undefined") || partner.equals(""))) {
+                return Optional.empty();
+            } else {
+                return Optional.ofNullable(partner).map(String::toLowerCase);
+            }
+        }
+        return Optional.ofNullable(targetLabel).map(String::toLowerCase);
+    }
+
+    private boolean unspecifiedInfrastructure(TNodeTemplate nodeTemplate) {
+        if(nodeTemplate.getId().contains("placeholder")){
+            return true;
+        }
+        return false;
     }
 
     private void persistPrologFile (String topology, String fileName) throws IOException {
