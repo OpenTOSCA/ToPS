@@ -1,4 +1,4 @@
-# IPsec Encryption
+# PubSub Proxys
 
 ## Description
 The PubSubProxys solution can be used to change the messaging between components from HTTP-based communication 
