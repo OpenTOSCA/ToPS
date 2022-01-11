@@ -12,9 +12,11 @@ the publish-sucribe pattern. The solution is independent of the specific message
 ## Selection Criteria
 
 ```prolog
-ipsec(Component_1, Component_2) :-
-   host(Component_1, Host_1, vm),
-   host(Component_2, Host_2, vm).
+pubsubproxys(Component_1, Component_2) :-
+   relation(Relation_ID, Component_1, Component_2),
+   relation_types(RT),
+   member(Relation_ID, RT),
+   member(httpconnectsto, RT).
 ```
 
 ## Concrete Solution Implementation
