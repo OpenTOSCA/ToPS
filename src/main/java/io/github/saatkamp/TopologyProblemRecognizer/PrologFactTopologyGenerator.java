@@ -151,7 +151,7 @@ public class PrologFactTopologyGenerator {
             }
             //Without specific information about the Hosting Environment we assume restricted environments to enable the user to
             //Select if these problems will occur
-            if (unspecifiedInfrastructure(nodeTemplate)){
+            if (unspecifiedInfrastructure(topologyTemplate, nodeTemplate)){
                 String propertykey = prologNames.encode("inboundcommunication");
                 String value = prologNames.encode("false");
                 plContent = plContent
@@ -247,8 +247,15 @@ public class PrologFactTopologyGenerator {
         return Optional.ofNullable(targetLabel).map(String::toLowerCase);
     }
 
-    private boolean unspecifiedInfrastructure(TNodeTemplate nodeTemplate) {
+    private boolean unspecifiedInfrastructure(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
         if(nodeTemplate.getId().contains("placeholder")){
+            return true;
+        }
+
+        List<TNodeTemplate> hostedOnSuccessorsOfNodeTemplate = TOSCAModelUtilities.getHostedOnSuccessorsOfNodeTemplate(topologyTemplate, nodeTemplate);
+        List<TNodeTemplate> hostedOnPredecessorsOfNodeTemplate = TOSCAModelUtilities.getHostedOnPredecessorsOfNodeTemplate(topologyTemplate, nodeTemplate);
+
+        if(hostedOnPredecessorsOfNodeTemplate.isEmpty() && hostedOnSuccessorsOfNodeTemplate.isEmpty() && nodeTemplate.getRequirements() != null) {
             return true;
         }
         return false;
