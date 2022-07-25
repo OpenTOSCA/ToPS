@@ -1,9 +1,25 @@
 package io.github.saatkamp.TopologyProblemRecognizer;
 
-import org.eclipse.winery.common.ids.definitions.NodeTypeId;
-import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import javax.xml.namespace.QName;
+
+import org.eclipse.winery.model.ids.definitions.NodeTypeId;
+import org.eclipse.winery.model.ids.definitions.PolicyTypeId;
+import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TNodeType;
+import org.eclipse.winery.model.tosca.TPolicy;
+import org.eclipse.winery.model.tosca.TPolicyType;
 import org.eclipse.winery.model.tosca.TRelationshipTemplate;
 import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
@@ -13,14 +29,6 @@ import org.eclipse.winery.repository.client.IWineryRepositoryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.TOSCAModelUtilities;
-
-import javax.xml.namespace.QName;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 public class PrologFactTopologyGenerator {
 
@@ -36,8 +44,9 @@ public class PrologFactTopologyGenerator {
     }
 
     /**
-     * Takes a topology template from the repository and generates a prolog file for this topology based on the metamodel.
-     * Because in Prolog Variables starts with a capital letter all ids are transformed to lower case.
+     * Takes a topology template from the repository and generates a prolog file for this topology based on the
+     * metamodel. Because in Prolog Variables starts with a capital letter all ids are transformed to lower case.
+     *
      * @param serviceTemplateQName
      * @throws IOException
      */
@@ -49,13 +58,13 @@ public class PrologFactTopologyGenerator {
         TTopologyTemplate topologyTemplate = this.repositoryClient.getTopologyTemplate(serviceTemplateQName);
 
         //Transforms Node Templates in component([nodeTemplateID]).
-        for(TNodeTemplate nodeTemplate: topologyTemplate.getNodeTemplates()) {
+        for (TNodeTemplate nodeTemplate : topologyTemplate.getNodeTemplates()) {
             String id = prologNames.encode(nodeTemplate.getId());
             plContent = plContent + "component(" + id + ")." + newline;
         }
 
         //Transforms Node Types contained in the topology in component_of_type([nodeTemplateID], [nodeTypeID]).
-        for(TNodeTemplate nodeTemplate: topologyTemplate.getNodeTemplates()) {
+        for (TNodeTemplate nodeTemplate : topologyTemplate.getNodeTemplates()) {
             NodeTypeId nodeTypeId = new NodeTypeId(nodeTemplate.getType());
             String componentID = prologNames.encode(nodeTemplate.getId());
             String typeID = prologNames.encode(nodeTypeId.getXmlId().toString());
@@ -66,14 +75,14 @@ public class PrologFactTopologyGenerator {
             List<NodeTypeId> superNodeTypesIDs = getSuperNodeTypesIDs(nodeTemplate);
             //Only if more than the direct type is in the list of superTypes this fact has to be added
             plContent = plContent + "component_types([" + componentID;
-            for (NodeTypeId id: superNodeTypesIDs) {
+            for (NodeTypeId id : superNodeTypesIDs) {
                 plContent = plContent + ", " + prologNames.encode(id.getXmlId().toString());
             }
             plContent = plContent + "])." + newline;
         }
 
         //Transforms Relationship Templates in relation([sourceNodeTemplateID], [targetNodeTemplateID], [relationshipTemplateID]).
-        for(TRelationshipTemplate relationshipTemplate: topologyTemplate.getRelationshipTemplates()) {
+        for (TRelationshipTemplate relationshipTemplate : topologyTemplate.getRelationshipTemplates()) {
             TNodeTemplate sourceNodeTemplate
                     = ModelUtilities.getSourceNodeTemplateOfRelationshipTemplate(topologyTemplate, relationshipTemplate);
             TNodeTemplate targetNodeTemplate
@@ -81,20 +90,29 @@ public class PrologFactTopologyGenerator {
             String sourceID = prologNames.encode(sourceNodeTemplate.getId());
             String targetID = prologNames.encode(targetNodeTemplate.getId());
             String relationID = prologNames.encode(relationshipTemplate.getId());
-            plContent = plContent + "relation(" + relationID +", " + sourceID + ", " + targetID + ")." + newline;
+            plContent = plContent + "relation(" + relationID + ", " + sourceID + ", " + targetID + ")." + newline;
+
+            //Add policies at relationships as properties (If a Policy is there, the value is true)
+            List<TPolicy> policies = relationshipTemplate.getPolicies();
+            if (policies != null && !policies.isEmpty()) {
+                for (TPolicy policy : policies) {
+                    TPolicyType policyType = repositoryClient.getElement(new PolicyTypeId(policy.getPolicyType()));
+                    plContent = plContent + "property(" + relationID + ", " + prologNames.encode(policyType.getName()) + ", " + "true)." + newline;
+                }
+            }
 
             //An extension to type hierarchies to enable a check of supertypes as relation_types([relationID, typeID, superTypeID, ...]).
             List<RelationshipTypeId> superRelationshipTypesIDs = getSuperRelationshipTypesIDs(relationshipTemplate);
             //Only if more than the direct type is in the list of superTypes this fact has to be added
             plContent = plContent + "relation_types([" + relationID;
-            for (RelationshipTypeId id: superRelationshipTypesIDs) {
+            for (RelationshipTypeId id : superRelationshipTypesIDs) {
                 plContent = plContent + ", " + prologNames.encode(id.getXmlId().toString());
             }
             plContent = plContent + "])." + newline;
         }
 
         //Transforms Relationship Types contained in the topology in relation_of_type([relationshipTemplateID], [relationshipTypeID]).
-        for(TRelationshipTemplate relationshipTemplate: topologyTemplate.getRelationshipTemplates()) {
+        for (TRelationshipTemplate relationshipTemplate : topologyTemplate.getRelationshipTemplates()) {
             RelationshipTypeId relationshipTypeId = new RelationshipTypeId(relationshipTemplate.getType());
             //No Type checking of the Relationship Type - must be one of the normative types
             //TODO: An extenstion to type hierarchies is required to enable a check of supertypes
@@ -104,12 +122,13 @@ public class PrologFactTopologyGenerator {
         }
 
         //Transforms KVProperties of Relationships in property([relationshipTemplateID], [KVPropertyKey], [KVPropertyValue]).
-        for (TRelationshipTemplate relationshipTemplate: topologyTemplate.getRelationshipTemplates()) {
-            if(relationshipTemplate.getProperties() != null) {
-                Map<String, String> kVProperties = relationshipTemplate.getProperties().getKVProperties();
-                if(kVProperties != null) {
-                    for (Map.Entry<String, String> entry: kVProperties.entrySet()) {
-                        if(entry.getValue() != "") {
+        for (TRelationshipTemplate relationshipTemplate : topologyTemplate.getRelationshipTemplates()) {
+            if (relationshipTemplate.getProperties() != null) {
+                Map<String, String> kVProperties = ModelUtilities.getPropertiesKV(relationshipTemplate);
+                ;
+                if (kVProperties != null) {
+                    for (Map.Entry<String, String> entry : kVProperties.entrySet()) {
+                        if (entry.getValue() != "") {
                             String relationID = prologNames.encode(relationshipTemplate.getId());
                             String keyID = prologNames.encode(entry.getKey());
                             String valueID = prologNames.encode(entry.getValue());
@@ -122,12 +141,13 @@ public class PrologFactTopologyGenerator {
         }
 
         //Transforms KVProperties of Nodes in property([nodeTemplateID], [KVPropertyKey], [KVPropertyValue]).
-        for (TNodeTemplate nodeTemplate: topologyTemplate.getNodeTemplates()) {
-            if(nodeTemplate.getProperties() != null) {
-                Map<String, String> kVProperties = nodeTemplate.getProperties().getKVProperties();
-                if(kVProperties != null) {
-                    for (Map.Entry<String, String> entry: kVProperties.entrySet()) {
-                        if(entry.getValue() != "") {
+        for (TNodeTemplate nodeTemplate : topologyTemplate.getNodeTemplates()) {
+            if (nodeTemplate.getProperties() != null) {
+                Map<String, String> kVProperties = ModelUtilities.getPropertiesKV(nodeTemplate);
+                ;
+                if (kVProperties != null) {
+                    for (Map.Entry<String, String> entry : kVProperties.entrySet()) {
+                        if (entry.getValue() != "") {
                             String nodeID = prologNames.encode(nodeTemplate.getId());
                             String keyID = prologNames.encode(entry.getKey());
                             String valueID = prologNames.encode(entry.getValue());
@@ -140,10 +160,10 @@ public class PrologFactTopologyGenerator {
         }
 
         //Add special location property to the facts
-        for (TNodeTemplate nodeTemplate: topologyTemplate.getNodeTemplates()) {
+        for (TNodeTemplate nodeTemplate : topologyTemplate.getNodeTemplates()) {
             Optional<String> location = getNodeTemplateLocation(nodeTemplate);
             String nodeID = prologNames.encode(nodeTemplate.getId());
-            if (location.isPresent()){
+            if (location.isPresent()) {
                 String propertykey = prologNames.encode("location");
                 String value = prologNames.encode(location.get());
                 plContent = plContent
@@ -151,14 +171,13 @@ public class PrologFactTopologyGenerator {
             }
             //Without specific information about the Hosting Environment we assume restricted environments to enable the user to
             //Select if these problems will occur
-            if (unspecifiedInfrastructure(topologyTemplate, nodeTemplate)){
+            if (unspecifiedInfrastructure(topologyTemplate, nodeTemplate)) {
                 String propertykey = prologNames.encode("inboundcommunication");
                 String value = prologNames.encode("false");
                 plContent = plContent
                         + "property(" + nodeID + ", " + propertykey + ", " + value + ")." + newline;
             }
         }
-
 
         List<TNodeTemplate> nodesWithoutIncomingHostedOnRelationships = TOSCAModelUtilities.getNodeTemplatesWithoutIncomingHostedOnRelationships(topologyTemplate);
 
@@ -175,11 +194,11 @@ public class PrologFactTopologyGenerator {
         persistPrologFile(plContent, serviceTemplateQName.getLocalPart().toString());
     }
 
-    private List<TNodeTemplate> getHostStack (TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
+    private List<TNodeTemplate> getHostStack(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
         List<TNodeTemplate> hostStack = new ArrayList<>();
         hostStack.add(nodeTemplate);
         List<TNodeTemplate> hostedOnPredecessors = TOSCAModelUtilities.getHostedOnSuccessorsOfNodeTemplate(topologyTemplate, nodeTemplate);
-        while(!hostedOnPredecessors.isEmpty()) {
+        while (!hostedOnPredecessors.isEmpty()) {
             List<TNodeTemplate> transitiveHosts = new ArrayList<>();
             hostedOnPredecessors.stream().forEach(host -> {
                 hostStack.add(host);
@@ -189,15 +208,15 @@ public class PrologFactTopologyGenerator {
             hostedOnPredecessors.addAll(transitiveHosts);
         }
 
-
-        return  hostStack;
+        return hostStack;
     }
 
-    private List<NodeTypeId> getSuperNodeTypesIDs (TNodeTemplate nodeTemplate) {
+    private List<NodeTypeId> getSuperNodeTypesIDs(TNodeTemplate nodeTemplate) {
         List<NodeTypeId> superNodeTypesIDs = new ArrayList<>();
         //Add NodeTemplate Type to the List
         NodeTypeId typeId = new NodeTypeId(nodeTemplate.getType());
         superNodeTypesIDs.add(typeId);
+        TNodeType nodeType = this.repositoryClient.getType(nodeTemplate);
         TNodeType type = this.repositoryClient.getElement(typeId);
         //Add all further superTypes to the list
         while (type.getDerivedFrom() != null) {
@@ -208,7 +227,7 @@ public class PrologFactTopologyGenerator {
         return superNodeTypesIDs;
     }
 
-    private List<RelationshipTypeId> getSuperRelationshipTypesIDs (TRelationshipTemplate relationshipTemplate) {
+    private List<RelationshipTypeId> getSuperRelationshipTypesIDs(TRelationshipTemplate relationshipTemplate) {
         List<RelationshipTypeId> superRelationshipTypesIDs = new ArrayList<>();
         //Add NodeTemplate Type to the List
         RelationshipTypeId typeId = new RelationshipTypeId(relationshipTemplate.getType());
@@ -223,6 +242,13 @@ public class PrologFactTopologyGenerator {
         return superRelationshipTypesIDs;
     }
 
+    /**
+     * Returns either the value of the location property or if location is undefined the value of the participant
+     * property
+     *
+     * @param nodeTemplate
+     * @return location or participant value
+     */
     private Optional<String> getNodeTemplateLocation(TNodeTemplate nodeTemplate) {
         QName location = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "location");
         QName participant = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE,
@@ -248,20 +274,20 @@ public class PrologFactTopologyGenerator {
     }
 
     private boolean unspecifiedInfrastructure(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
-        if(nodeTemplate.getId().contains("placeholder")){
+        if (nodeTemplate.getId().contains("placeholder")) {
             return true;
         }
 
         List<TNodeTemplate> hostedOnSuccessorsOfNodeTemplate = TOSCAModelUtilities.getHostedOnSuccessorsOfNodeTemplate(topologyTemplate, nodeTemplate);
         List<TNodeTemplate> hostedOnPredecessorsOfNodeTemplate = TOSCAModelUtilities.getHostedOnPredecessorsOfNodeTemplate(topologyTemplate, nodeTemplate);
 
-        if(hostedOnPredecessorsOfNodeTemplate.isEmpty() && hostedOnSuccessorsOfNodeTemplate.isEmpty() && nodeTemplate.getRequirements() != null) {
+        if (hostedOnPredecessorsOfNodeTemplate.isEmpty() && hostedOnSuccessorsOfNodeTemplate.isEmpty() && nodeTemplate.getRequirements() != null) {
             return true;
         }
         return false;
     }
 
-    private void persistPrologFile (String topology, String fileName) throws IOException {
+    private void persistPrologFile(String topology, String fileName) throws IOException {
         File file = new File("topologies/" + fileName + ".pl");
         try {
             FileWriter fileWriter = new FileWriter(file);
@@ -271,7 +297,5 @@ public class PrologFactTopologyGenerator {
         } catch (IOException e) {
             throw new IOException("Could not write topology facts", e);
         }
-
     }
-
 }
