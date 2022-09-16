@@ -92,15 +92,6 @@ public class PrologFactTopologyGenerator {
             String relationID = prologNames.encode(relationshipTemplate.getId());
             plContent = plContent + "relation(" + relationID + ", " + sourceID + ", " + targetID + ")." + newline;
 
-            //Add policies at relationships as properties (If a Policy is there, the value is true)
-            List<TPolicy> policies = relationshipTemplate.getPolicies();
-            if (policies != null && !policies.isEmpty()) {
-                for (TPolicy policy : policies) {
-                    TPolicyType policyType = repositoryClient.getElement(new PolicyTypeId(policy.getPolicyType()));
-                    plContent = plContent + "property(" + relationID + ", " + prologNames.encode(policyType.getName()) + ", " + "true)." + newline;
-                }
-            }
-
             //An extension to type hierarchies to enable a check of supertypes as relation_types([relationID, typeID, superTypeID, ...]).
             List<RelationshipTypeId> superRelationshipTypesIDs = getSuperRelationshipTypesIDs(relationshipTemplate);
             //Only if more than the direct type is in the list of superTypes this fact has to be added
@@ -136,6 +127,15 @@ public class PrologFactTopologyGenerator {
                                     + "property(" + relationID + ", " + keyID + ", " + valueID + ")." + newline;
                         }
                     }
+                }
+            }
+            //Add policies at relationships as properties (If a Policy is there, the value is true)
+            List<TPolicy> policies = relationshipTemplate.getPolicies();
+            if (policies != null && !policies.isEmpty()) {
+                for (TPolicy policy : policies) {
+                    String relationID = prologNames.encode(relationshipTemplate.getId());
+                    TPolicyType policyType = repositoryClient.getElement(new PolicyTypeId(policy.getPolicyType()));
+                    plContent = plContent + "property(" + relationID + ", " + prologNames.encode(policyType.getName()) + ", " + "true)." + newline;
                 }
             }
         }
@@ -251,19 +251,18 @@ public class PrologFactTopologyGenerator {
      */
     private Optional<String> getNodeTemplateLocation(TNodeTemplate nodeTemplate) {
         QName location = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "location");
-        QName participant = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE,
-                "participant");
+        QName participant = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "participant");
 
         if (nodeTemplate == null) {
             return Optional.empty();
         }
         Map<QName, String> otherAttributes = nodeTemplate.getOtherAttributes();
         String targetLabel = new String();
-        targetLabel = otherAttributes.get(location);
+        targetLabel = otherAttributes.entrySet().stream().filter(e -> e.getKey().toString().equals(location.toString())).map(Map.Entry::getValue).findFirst().orElse(null);
 
         if (targetLabel == null || targetLabel != null && (targetLabel.equals("undefined") || targetLabel.equals(""))) {
             String partner = new String();
-            partner = otherAttributes.get(participant);
+            partner = otherAttributes.entrySet().stream().filter(e -> e.getKey().toString().equals(participant.toString())).map(Map.Entry::getValue).findFirst().orElse(null);
             if (partner == null || partner != null && (partner.equals("undefined") || partner.equals(""))) {
                 return Optional.empty();
             } else {
