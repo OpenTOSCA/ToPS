@@ -23,6 +23,7 @@ sourceCompatibility = 1.8
 repositories {
 	mavenCentral()
 	maven { url 'https://opentosca.github.io/mvn-repo/' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -35,8 +36,8 @@ dependencies {
     compile fileTree(dir: 'libs', includes: ['*.jar'])
 
 	compile('org.springframework.boot:spring-boot-starter-web')
-//    compile('org.eclipse.winery:org.eclipse.winery.repository.client:2.0.0-SNAPSHOT')
-//    compile('org.eclipse.winery:org.eclipse.winery.model.tosca:2.0.0-SNAPSHOT')
+    compile('com.github.opentosca.winery:org.eclipse.winery.repository.client:ustutt-9b6bd07e7a-1')
+    compile('com.github.opentosca.winery:org.eclipse.winery.model.tosca:ustutt-9b6bd07e7a-1')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
     compile 'com.vladsch.flexmark:flexmark-all:0.32.18'
 

@@ -147,7 +147,7 @@ public class PrologFactTopologyGenerator {
                 ;
                 if (kVProperties != null) {
                     for (Map.Entry<String, String> entry : kVProperties.entrySet()) {
-                        if (entry.getValue() != "") {
+                        if (!entry.getValue().isEmpty()) {
                             String nodeID = prologNames.encode(nodeTemplate.getId());
                             String keyID = prologNames.encode(entry.getKey());
                             String valueID = prologNames.encode(entry.getValue());
