@@ -86,8 +86,18 @@ public class PrologChecker {
                         finding.add(componentFinding);
                         logger.info("This is the result for Variable {}: {}", entry.getKey(), prologNames.decode(entry.getValue().toString()));
                     }
-                    findings.addFinding(finding);
+
+                    boolean doesNotContainNewEntry = findings.getFindings().stream().noneMatch(existingFinding -> {
+                        return existingFinding.stream().allMatch(entry -> {
+                           return finding.contains(entry);
+                        });
+                                            });
+
+                    if(doesNotContainNewEntry) {
+                        findings.addFinding(finding);
+                    }
                 }
+
                 problemFindings.add(findings);
             } else {
                 logger.info("problem {} is not contained in topology", problemQuery);
@@ -154,6 +164,11 @@ public class PrologChecker {
                 solutions.add(solutionInputData);
 
             } else {
+                //Quickfix -otherwise decoded component-ids are stored as "encoded names" in the nameHashMap
+                occurrence.stream().forEach(finding -> {
+                    String encodedComponentId = prologNames.decode(finding.getComponentId());
+                    finding.setComponentId(encodedComponentId);
+                });
                 logger.info("problem {} is not contained in topology", solutionQuery);
             }
         }

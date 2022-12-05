@@ -1,6 +1,6 @@
 package utils;
 
-import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
+import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TRelationshipTemplate;
 import org.eclipse.winery.model.tosca.TRelationshipType;

@@ -7,7 +7,7 @@ components_in_different_locations(Component_1, Component_2) :-
 	member(H1, S1),
 	member(Component_2, S2),
 	member(H2, S2),
-	Location_1 \= Location_2.
+	Location_1 \== Location_2.
 
 component_in_restricted_environment(Component_1) :-
     property(P, inboundcommunication, false),
